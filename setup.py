@@ -2,16 +2,15 @@ from distutils.core import setup, Extension
 
 nvram_module = Extension(
     'nvram',
-    sources       = ['src/nvram-bcrm.c', 'src/nvram.c'],
     libraries     = [],
-    
     include_dirs  = [ './include' ],
     library_dirs  = [],
     define_macros = [ ('DEBUG', 1) ],
-    undef_macros  = []
-    
+    undef_macros  = [],
+    sources       = ['src/nv-init.c',
+                     'src/nv-device.c',
+                     'src/nvram-bcrm.c']
 )
-
 
 setup ( name = 'NVRAM Interface',
 	version = '0.01',
