@@ -1,18 +1,50 @@
 
 #include "common.h"
+#include "nv-device.h"
 
 /* *******************************************************
  * NVRAM Method Function Implementations
  * ******************************************************/
 
-static PyObject *nvram_attach(PyObject *self, PyObject *nv_dev);
-static PyObject *nvram_detach(PyObject *self);
-static PyObject *nvram_get(PyObject *self, PyObject *name);
-static PyObject *nvram_set(PyObject *self, PyObject *name, PyObject *val);
-static PyObject *nvram_commit(PyObject *self);
-static PyObject *nvram_lock(PyObject *self);
-static PyObject *nvram_unlock(PyObject *self);
-static PyObject *nvram_stats(PyObject *self);
+static PyObject *nvram_attach(PyObject *self, PyObject *nvdev)
+{
+  Py_RETURN_NONE;
+}
+
+static PyObject *nvram_detach(PyObject *self)
+{
+  Py_RETURN_NONE;
+}
+
+static PyObject *nvram_get(PyObject *self, PyObject *name)
+{
+  Py_RETURN_NONE;
+}
+
+static PyObject *nvram_set(PyObject *self, PyObject *name, PyObject *val)
+{
+  Py_RETURN_NONE;
+}
+
+static PyObject *nvram_commit(PyObject *self)
+{
+  Py_RETURN_NONE;
+}
+
+static PyObject *nvram_lock(PyObject *self)
+{
+  Py_RETURN_NONE;
+}
+
+static PyObject *nvram_unlock(PyObject *self)
+{
+  Py_RETURN_NONE;
+}
+
+static PyObject *nvram_stats(PyObject *self)
+{
+  Py_RETURN_NONE;
+}
 
 /* *******************************************************
  * NVRAM Method Def 
@@ -35,13 +67,14 @@ static PyMethodDef NVRAM_Methods[] =
         "set specified cell of nv-device to value"     },        
   { "commit", nvram_commit, METH_NOARGS,
         "push any pending changes to the nv-device"    },
-        
+  /*      
   { "lock", nvram_lock, METH_NOARGS,
         "wait for a read/write lock on the nv-device"  },
         
   { "unlock", nvram_unlock, METH_NOARGS,
         "release a lock held on the nv-device"         },
-        
+  */    
+  
   { "stats", nvram_stats, METH_NOARGS,
         "return a dict-obj with stats on nv-device"    },
                 
@@ -49,18 +82,24 @@ static PyMethodDef NVRAM_Methods[] =
 };
 
 /* *******************************************************
- * NVRAM Module Initialization Routine
+ * NVRAM Module Def and Initialization Routine
  * *******************************************************/
- 
-PyMODINIT_FUNC initnvram(void)
+
+static struct PyModuleDef NVRAM_Def = {
+  PyModuleDef_HEAD_INIT,
+  "nvram", NULL,
+  -1,
+  NVRAM_Methods
+};
+
+PyMODINIT_FUNC PyInit_nvram(void)
 {
-  PyObject *m;
+  PyObject *mod;
   
-  m = Py_InitModule3("nvram", NVRAM_Methods,
-		     "Interface to system nvram device(s)");
+  mod = PyModule_Create( &NVRAM_Def );
 		     
-  if (m == NULL)
-    return;
+  if (mod == NULL)
+    return NULL;
   
   /* SpamError = PyErr_NewException("spam.error", NULL, NULL); */
   /* Py_INCREF(SpamError); */
@@ -69,6 +108,9 @@ PyMODINIT_FUNC initnvram(void)
   /* local_dict = PyDict_New(); */
   /* Py_INCREF(local_dict); */
   /* PyModule_AddObject(m, "words", local_dict); */
+
+  
+  return mod;
 }
 
 
