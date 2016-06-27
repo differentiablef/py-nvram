@@ -4,21 +4,38 @@
 
 #include "common.h"
 
+/* **************************************************************
+ *    nv-device: parameters and configuration 
+ */
+ 
+struct cfg_param
+{
+    char *identifier; /* config. param. identifier */
+    int  type;        /* expected data-type of value */
+    bool required;    /* determines if param. is required for
+			 initialization */
+    char *descr;      /* description of config parameter */
+    void *value;
+};
+
+struct nvdev_cfg
+{
+};
+
 
 /* **************************************************************
  *    nv-device abstract device definition
  */
 
-struct nvdev_obj {
+struct nvdev_obj
+{
     /* Basic Info and State Variables */
     char *name;
-    size_t size;
-    size_t weight;
-    uint_t flags;
+    uint8_t mode;
     
     /* Initialize and Finalize */
-    int (*init)();
-    int (*deinit)();
+    int (*init)(void);
+    int (*deinit)(void);
 
     /* Named-Cell Find/Update/Insert/Remove */
     void*   (*find)(const char *name, size_t *clen);
@@ -33,7 +50,7 @@ struct nvdev_obj {
     
 };
 
-void nvram_dev_register( struct nvdev_obj *d );
-void nvram_dev_unregister( struct nvdev_obj *d );
+#define NVRAM_DEVICE_DEF( name ) \
+    LIB_LOCAL struct nvdev_obj name = 
 
 #endif /*_NV_DEVICE_H_*/

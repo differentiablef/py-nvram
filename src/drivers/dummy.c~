@@ -1,5 +1,4 @@
 
-#include "common.h"
 #include "nv-device.h"
 
 /* Named-Cell Find/Update/Insert/Remove */
@@ -22,7 +21,7 @@ static int dummy_remove(const char *name)
 {
     return 0;
 }
-    
+
 /* Addressed Read/Write */
 static int dummy_read(off_t addr, void *buf, size_t len)
 {
@@ -34,15 +33,31 @@ static int dummy_write(off_t addr, void *buf, size_t len)
     return 0;
 }
 
-/* Initialize and Finalize Routines */
-static int dummy_init()
+/* Device Initialize and Finalize Routines */
+static int dummy_init(void)
 {
+    nvram_dev_register(0);
+    nvram_dev_unregister(0);
+    return 0;
 }
 
-static int dummy_deinit()
+static int dummy_deinit(void)
 {
+    return 0;
 }
 
+NVRAM_DEVICE_DEF( dummy )
+{
+    .name   = "dummy",
 
+    .init   = &dummy_init,
+    .deinit = &dummy_deinit,
 
-#endif /*_NV_DEVICE_H_*/
+    .find   = &dummy_find,
+    .update = &dummy_update,
+    .insert = &dummy_insert,
+    .remove = &dummy_remove,
+
+    .read   = &dummy_read,
+    .write  = &dummy_write
+};
