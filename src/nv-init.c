@@ -5,48 +5,21 @@
 #include "nv-device.h"
 #include "nv-ram.h"
 
-/* *******************************************************
- * NVRAM Method Function Implementations
- * ******************************************************/
-
-static PyObject *nvram_attach(PyObject *self, PyObject *nvdev)
+void process_drivers()
 {
-    Py_RETURN_NONE;
-}
+    struct nvdev_obj *p, **pdev = nvram_drivers;
+    struct nvdev_param *k;
 
-static PyObject *nvram_detach(PyObject *self)
-{
-    Py_RETURN_NONE;
-}
+    void *devst;
+    
+    for( ; *pdev != NULL; pdev++ )
+    {
+	p = *pdev;
 
-static PyObject *nvram_get(PyObject *self, PyObject *name)
-{
-    Py_RETURN_NONE;
-}
+	DEBUG( p->name, "s" );
+	
+    }
 
-static PyObject *nvram_set(PyObject *self, PyObject *name, PyObject *val)
-{
-    Py_RETURN_NONE;
-}
-
-static PyObject *nvram_commit(PyObject *self)
-{
-    Py_RETURN_NONE;
-}
-
-static PyObject *nvram_lock(PyObject *self)
-{
-    Py_RETURN_NONE;
-}
-
-static PyObject *nvram_unlock(PyObject *self)
-{
-    Py_RETURN_NONE;
-}
-
-static PyObject *nvram_stats(PyObject *self)
-{
-    Py_RETURN_NONE;
 }
 
 /* *******************************************************
@@ -55,29 +28,22 @@ static PyObject *nvram_stats(PyObject *self)
 
 static PyMethodDef NVRAM_Methods[] = 
 {
-  { "attach", nvram_attach, METH_VARARGS,
+  { "attach", nvram_attach, METH_VARARGS | METH_KEYWORDS,
         "attach/connect module to specified nv-device" },
-  
   { "detach", nvram_detach, METH_NOARGS,
         "detach/disconnect module from nv-device"      },
-        
   { "get", nvram_get, METH_VARARGS, 
         "get specified cell value from nv-device"      },
-        
   { "set", nvram_set, METH_VARARGS,
         "set specified cell of nv-device to value"     },
-  { "unset", nvram_set, METH_VARARGS,
+  { "unset", nvram_unset, METH_VARARGS,
         "set specified cell of nv-device to value"     },        
   { "commit", nvram_commit, METH_NOARGS,
         "push any pending changes to the nv-device"    },
-  
   { "lock", nvram_lock, METH_NOARGS,
         "wait for a read/write lock on the nv-device"  },
-        
   { "unlock", nvram_unlock, METH_NOARGS,
-        "release a lock held on the nv-device"         },
-  
-  
+        "release a lock held on the nv-device"         },   
   { "stats", nvram_stats, METH_NOARGS,
         "return a dict-obj with stats on nv-device"    },
                 
@@ -98,21 +64,15 @@ static struct PyModuleDef NVRAM_Def = {
 PyMODINIT_FUNC PyInit_nvram(void)
 {
     PyObject *mod;
-    int i = 0;
+
     
     mod = PyModule_Create( &NVRAM_Def );
 
     if (mod == NULL)
 	return NULL;
   
-
-    for( ; nvram_drivers[i] != NULL; i++ )
-    {
-	printf("%s\n", nvram_drivers[i]->name );
-    }
+    process_drivers ();
   
     return mod;
 }
-
-
 

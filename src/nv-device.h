@@ -7,25 +7,28 @@
 /* **************************************************************
  *    nv-device: parameters and configuration 
  */
- 
-struct cfg_param
+
+enum
 {
-    char *identifier; /* config. param. identifier */
+    PARAM_STRING = 1,
+    PARAM_INTEGER,
+    PARAM_BOOL
+};
+
+struct nvdev_param
+{
+    char *id;         /* config. param. identifier */
     int  type;        /* expected data-type of value */
     bool required;    /* determines if param. is required for
 			 initialization */
     char *descr;      /* description of config parameter */
-    void *value;
 };
-
-struct nvdev_cfg
-{
-};
-
 
 /* **************************************************************
  *    nv-device abstract device definition
  */
+
+typedef struct nvdev_obj *nvdev_t;
 
 struct nvdev_obj
 {
@@ -34,20 +37,29 @@ struct nvdev_obj
     uint8_t mode;
     
     /* Initialize and Finalize */
-    int (*init)(void);
-    int (*deinit)(void);
+    void* (*init)(nvdev_t dev);
+    int (*deinit)(nvdev_t dev);
+
+    /* Attach/Detach routines */
+    int  (*attach)(nvdev_t dev, uintptr_t params[]);
+    int  (*detach)(nvdev_t dev);
 
     /* Named-Cell Find/Update/Insert/Remove */
-    void*   (*find)(const char *name, size_t *clen);
-    int   (*update)(const char *name, void *ptr, size_t len);
-    int   (*insert)(const char *name, void *ptr, size_t len);
-    int   (*remove)(const char *name);
+    void*   (*find)(nvdev_t dev, const char *name, size_t *clen);
+    int   (*update)(nvdev_t dev, const char *name, void *ptr, size_t len);
+    int   (*insert)(nvdev_t dev, const char *name, void *ptr, size_t len);
+    int   (*remove)(nvdev_t dev, const char *name);
     
     /* Addressed Read/Write */
-    int  (*read)(off_t addr, void *buf, size_t len);
-    int (*write)(off_t addr, void *buf, size_t len);
-
+    int  (*read)(nvdev_t dev, off_t addr, void *buf, size_t len);
+    int (*write)(nvdev_t dev, off_t addr, void *buf, size_t len);
     
+    struct nvdev_param *config; /* pointer to the first member of sent.
+				   terminated array of config parameter objects */
+    
+    int config_required;        /* if set to true, then driver requires config
+				   parameters be passed to it */
+    void *locals;
 };
 
 #define NVRAM_DEVICE_DEF( name ) \

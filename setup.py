@@ -14,6 +14,7 @@ def get_device_defs( name ):
 
 devs = [ ];
 srcs = [ './src/nv-device.c',
+         './src/nv-ram.c',
          './src/nv-init.c',
          './src/nv-drivers.c' ];
 
@@ -60,7 +61,7 @@ nvram_module = Extension(
     libraries     = [],
     include_dirs  = [ '../' ],
     library_dirs  = [],
-    define_macros = [ ('DEBUG', 1) ],
+    define_macros = [ ('_DEBUG_', 1) ],
     undef_macros  = [],
     sources       = srcs,
     depends       = [ 'src/common.h',
