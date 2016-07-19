@@ -17,4 +17,13 @@ row = nvram.attach(
         
     })
 
+nvram.set("test", "bill");
+
+ss = nvram.get("test");
+print(("test={}").format(ss));
+
+nvram.unset("test");
+
+nvram.commit();
+
 

@@ -11,7 +11,6 @@
  * NVRAM Method Function Implementations
  * ******************************************************/
 
-
 LIB_LOCAL
 PyObject *nvram_attach(PyObject *self, PyObject *args, PyObject *params)
 {
@@ -29,6 +28,7 @@ PyObject *nvram_attach(PyObject *self, PyObject *args, PyObject *params)
 	*err_type = NULL;
     
     MARKER_MSG("parse");
+
     /* attempt to extract arguments and keywords (borrowed refs) */
     if( !PyArg_ParseTupleAndKeywords(
 	    args, params, "s|O", kwlist, &pname, &pconfig) )
@@ -40,40 +40,19 @@ PyObject *nvram_attach(PyObject *self, PyObject *args, PyObject *params)
 	if( dev->name && (strcmp (pname, dev->name) == 0) )
 	    break;
     }
-
-    //adwaita
-    // airline-papercolor
-    
-    // airline-simple
-    // misterioso
-    
-    // tango-dark
-    // powerlineish
-
-    // solarized-alternate-gui
-    // tango
-
-    // airline-wombat
-    // wombat
-
-    // airline-durant
-    // airline-hybirdline
-    // airline-molokai
     
     if( dev == NULL ) {
-
-	/* if search unsuccessful, emit an error */	
+	/* if search unsuccessful, emit an error */
+	
 	err_type   = PyExc_KeyError;
 	err_string = "unknown device driver";
-	goto emit_error;
-	
+	goto error;
     }
     
     if( pconfig && dev->config ) {
 	/* if both pconfig and dev->config are provided, then
 	       process pconfig and setup device parameters */
 	
-
 	int cur = 0;
 	
         struct nvdev_param *param;
@@ -99,7 +78,7 @@ PyObject *nvram_attach(PyObject *self, PyObject *args, PyObject *params)
 		err_type   = PyExc_KeyError;
 		err_string =
 		    "'config' (pos 2) missing required entry";
-		goto emit_error;
+		goto error;
 	    }
 
 	    /* no, skip to next param */
@@ -108,12 +87,13 @@ PyObject *nvram_attach(PyObject *self, PyObject *args, PyObject *params)
 	}
 
 	switch( param->type ) {
+	    
 	case PARAM_INTEGER:
 	    if( ! PyLong_CheckExact( val ) ) {
 		err_type = PyExc_TypeError;
 		err_string =
 		    "improper key value type (config) (integer expected)";
-		goto emit_error;
+		goto error;
 	    }
 
 	    param_val[cur] = (uintptr_t) PyLong_AsVoidPtr( val );
@@ -124,18 +104,18 @@ PyObject *nvram_attach(PyObject *self, PyObject *args, PyObject *params)
 		err_type = PyExc_TypeError;
 		err_string =
 		    "improper key value type (config) (bool expected)";
-		goto emit_error;
+		goto error;
 	    }
 	    
 	    if( val == Py_True )
 		param_val[ cur ] = true;
 	    else if(val == Py_False )
 		param_val[ cur ] = false;
-	    
+
 	    goto next_param;
 	    
 	case PARAM_STRING:
-	    MARKER_MSG("string");
+	    /* MARKER_MSG("string"); */
 	    
 	    param_val[ cur ] = 0;
 	    goto next_param;
@@ -145,7 +125,7 @@ PyObject *nvram_attach(PyObject *self, PyObject *args, PyObject *params)
 	    err_string =
 		"Aborted: Potential Memory Corruption Or"	\
 		" Shitty Driver";
-	    goto emit_error;
+	    goto error;
 
 	}
 
@@ -160,7 +140,7 @@ PyObject *nvram_attach(PyObject *self, PyObject *args, PyObject *params)
 	/*   since it's NULL, emit an error             */
 	err_type   = PyExc_TypeError;
 	err_string = "named driver requires 'config' (pos 2) argument";	    
-	goto emit_error;
+	goto error;
 	
     }
 
@@ -169,15 +149,17 @@ PyObject *nvram_attach(PyObject *self, PyObject *args, PyObject *params)
 	/* failed to attach to device, so emit an error */
 	
 	err_type   = PyExc_RuntimeError;
-	err_string = "failed to attach to device";
-	goto emit_error;
+	err_string = "failed to attach device";
+	goto error;
 	
     }
 
+    Py_INCREF(pconfig);
+    PyModule_AddObject(self, "magic", pconfig);
     
     Py_RETURN_NONE;
 
-emit_error:
+error:
     PyErr_SetString (err_type, err_string);
     
     return NULL;
@@ -187,51 +169,178 @@ emit_error:
 LIB_LOCAL
 PyObject *nvram_detach(PyObject *self)
 {
+    /* error handling */
+    PyObject *err_type;
+    char *err_string;
     
     Py_RETURN_NONE;
+
+error:
+    PyErr_SetString (err_type, err_string);
+    
+    return NULL;
+
 }
 
 LIB_LOCAL
-PyObject *nvram_get(PyObject *self, PyObject *name)
+PyObject *nvram_get(PyObject *self, PyObject *args)
 {
+    /* error handling */
+    PyObject *err_type;
+    char *err_string;
+    
+    /* parameter values */
+    char *pname;
+
+    if( !PyArg_ParseTuple(args, "s", &pname) )
+	return NULL;
+
+    DEBUG(pname, "s");
+    
+    
+
     Py_RETURN_NONE;
+
+error:
+    PyErr_SetString (err_type, err_string);
+    
+    return NULL;
+
 }
 
 LIB_LOCAL
 PyObject *nvram_set(PyObject *self, PyObject *args)
 {
+    /* error handling */
+    PyObject *err_type;
+    char *err_string;
+
+    /* parameter values */
+    char *pname, *pvalue;
+
+    if( !PyArg_ParseTuple(args,"ss",&pname, &pvalue) )
+	return NULL;
+
+    DEBUG(pname, "s");
+    DEBUG(pvalue, "s");
+    
     Py_RETURN_NONE;
+    
+error:
+    PyErr_SetString (err_type, err_string);
+    
+    return NULL;
+
 }
 
 LIB_LOCAL
 PyObject *nvram_unset(PyObject *self, PyObject *args)
 {
+    /* error handling */
+    PyObject *err_type;
+    char *err_string;
+
+    /* parameter values */
+    char *pname;
+
+    if( !PyArg_ParseTuple(args, "s", &pname) )
+	return NULL;
+
+    DEBUG(pname, "s");
+    
     Py_RETURN_NONE;
+
+error:
+    PyErr_SetString (err_type, err_string);
+    
+    return NULL;
+
 }
 
 LIB_LOCAL
 PyObject *nvram_commit(PyObject *self)
 {
+    /* error handling */
+    PyObject *err_type;
+    char *err_string;
+    
     Py_RETURN_NONE;
+
+error:
+    PyErr_SetString (err_type, err_string);
+    
+    return NULL;
+
 }
 
 LIB_LOCAL
 PyObject *nvram_lock(PyObject *self)
 {
+    /* error handling */
+    PyObject *err_type;
+    char *err_string;
+    
     Py_RETURN_NONE;
+
+error:
+    PyErr_SetString (err_type, err_string);
+    
+    return NULL;
+
 }
 
 LIB_LOCAL
 PyObject *nvram_unlock(PyObject *self)
 {
+    /* error handling */
+    PyObject *err_type;
+    char *err_string;
+    
     Py_RETURN_NONE;
+
+error:
+    PyErr_SetString (err_type, err_string);
+    
+    return NULL;
+
 }
 
 LIB_LOCAL
 PyObject *nvram_stats(PyObject *self)
 {
+    /* error handling */
+    PyObject *err_type;
+    char *err_string;
+    
     Py_RETURN_NONE;
+    
+error:
+    PyErr_SetString (err_type, err_string);
+    
+    return NULL;
 }
+
+
+//adwaita
+// airline-papercolor
+
+// airline-simple
+// misterioso
+
+// tango-dark
+// powerlineish
+
+// solarized-alternate-gui
+// tango
+
+// airline-wombat
+// wombat
+
+// airline-durant
+// airline-hybirdline
+// airline-molokai
+
+
 
 /*  LocalWords:  pconfig
  */

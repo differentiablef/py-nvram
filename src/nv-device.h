@@ -66,3 +66,5 @@ struct nvdev_obj
     LIB_LOCAL struct nvdev_obj name = 
 
 #endif /*_NV_DEVICE_H_*/
+
+

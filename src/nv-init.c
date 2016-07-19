@@ -15,6 +15,7 @@ void process_drivers()
     for( ; *pdev != NULL; pdev++ )
     {
 	p = *pdev;
+	
 
 	DEBUG( p->name, "s" );
 	
@@ -65,14 +66,13 @@ PyMODINIT_FUNC PyInit_nvram(void)
 {
     PyObject *mod;
 
-    
     mod = PyModule_Create( &NVRAM_Def );
-
+    
     if (mod == NULL)
 	return NULL;
   
     process_drivers ();
-  
+
     return mod;
 }
 
