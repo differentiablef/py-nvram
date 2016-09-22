@@ -1,4 +1,5 @@
-# py-nvram
+# py-nvram 
+currently *very* incomplete
 
 ## Generic NVRAM Interface (as a python extension module)
 
